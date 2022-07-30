@@ -2,6 +2,7 @@ a
 a.txt
 a.out
 .vscode
+template.cpp
 
 # Prerequisites
 *.d
