@@ -3,6 +3,7 @@ a.txt
 a.out
 .vscode
 template.cpp
+grid_paths.html
 
 # Prerequisites
 *.d
