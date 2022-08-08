@@ -1,37 +1,34 @@
 #include <bits/stdc++.h>
 #define rep(i, n) for (int i = 0; i < n; i++)
 #define all(x) x.begin(), x.end()
-#define vi vector<int>
-#define vl vector<ll>
-#define len(x) x.size()
 #define pb push_back
-#define mp make_pair
+#define N 1000001
 #define fi first
 #define se second
-#define mod 1000000007
-#define N 200010
 using namespace std;
-typedef long long ll;
-int n, m, k, x;
-int ans = 0;
-vi v(N);
-vector<bool> pri(1000000);
+vector<int> v(N);
+int n, x, a = 0;
 
 int main()
 {
-    for (int i = 2; i * i <= 1000000; i++)
-        if (!pri[i])
-            for (int j = 2 * i; j <= 1000000; j += i)
-                if (!pri[j])
-                    pri[j] = 1;
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-    // freopen("a.txt", "r", stdin);
     cin >> n;
     rep(i, n)
     {
         cin >> x;
-        v.pb(x);
+        a = max(a, x);
+        int j = sqrt(x);
+        for (int i = 1; i <= j; i++)
+        {
+            if (x % i == 0)
+                v[i]++, v[x / i]++;
+        }
+        if (j * j == x)
+            v[j]--;
     }
-    sort(all(v));
+    for (int i = a; i > 0; i--)
+        if (v[i] > 1)
+        {
+            cout << i << "\n";
+            return 0;
+        }
 }
