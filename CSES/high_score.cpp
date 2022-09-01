@@ -2,62 +2,43 @@
 #define rep(i, n) for (int i = 0; i < n; i++)
 #define all(x) x.begin(), x.end()
 #define len(x) (int)x.size()
-#define pr(x) cout << x << " "
-#define end cout << "\n"
-#define mp make_pair
-#define pb push_back
-#define fi first
-#define se second
-#define mod 1000000007
-#define N 100000
 using namespace std;
 typedef long long ll;
-int n, m, a, b;
 
-vector<pair<int, ll>> adj[N + 1];
-priority_queue<pair<ll, int>> q;
-vector<ll> dis(N + 1);
-bool vis[N + 1];
-ll c;
-
-void djShoPath()
+struct Edge
 {
-    rep(i, n) dis[i + 1] = LONG_LONG_MIN;
-    dis[1] = 0;
-    q.push({0, 1});
-    while (!q.empty())
-    {
-        a = q.top().se;
-        q.pop();
-        vis[a] = 1;
-        for (auto i : adj[a])
-        {
-            if (dis[a] + i.se > dis[i.fi])
-            {
-                dis[i.fi] = dis[a] + i.se;
-                if (!vis[i.fi])
-                    q.push({dis[i.fi], i.fi});
-                // else if (i.fi != 4 && dis[a] + i.se > 0)
-                // {
-                //     cout << -1 << "\n";
-                //     return;
-                // }
-            }
-        }
-    }
-    pr(dis[n]);
-    end;
-}
+    int u;
+    int v;
+    ll d;
+};
 
 int main()
 {
     ios::sync_with_stdio(false);
     cin.tie(NULL);
+    int n, m;
     cin >> n >> m;
-    rep(i, m)
+    vector<Edge> e(m);
+    vector<ll> dis(n + 1, LONG_LONG_MIN);
+    rep(i, m) cin >> e[i].u >> e[i].v >> e[i].d;
+    dis[1] = 0;
+    rep(i, n - 1) rep(j, m)
     {
-        cin >> a >> b >> c;
-        adj[a].pb({b, c});
+        if (dis[e[j].u] != LONG_LONG_MIN &&
+            dis[e[j].u] + e[j].d > dis[e[j].v])
+            dis[e[j].v] = dis[e[j].u] + e[j].d;
     }
-    djShoPath();
+
+    ll d = dis[n];
+    rep(i, n - 1) rep(j, m)
+    {
+        if (dis[e[j].u] != LONG_LONG_MIN &&
+            dis[e[j].u] + e[j].d > dis[e[j].v])
+            dis[e[j].v] = 50000000000000;
+    }
+
+    if (dis[n] > d)
+        cout << -1 << "\n";
+    else
+        cout << dis[n] << "\n";
 }
