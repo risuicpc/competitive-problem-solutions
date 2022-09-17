@@ -2,68 +2,51 @@
 #define rep(i, n) for (int i = 0; i < n; i++)
 #define all(x) x.begin(), x.end()
 #define len(x) (int)x.size()
+#define inf 1000000000000000
 #define N 100001
 using namespace std;
 typedef long long ll;
 
-typedef tuple<ll, int, int> ti;
-
-struct comp
-{
-    constexpr bool operator()(ti const &a, ti const &b) const noexcept
-    {
-        return get<0>(a) == get<0>(b) ? get<2>(a) > get<2>(b) : get<0>(a) > get<0>(b);
-    }
-};
-
-priority_queue<ti, vector<ti>, comp> q;
-vector<pair<int, ll>> adj[N];
-vector<bool> vis(N);
-vector<ll> dis(N);
-vector<ll> d2(N);
+vector<pair<int, ll>> g1[N], g2[N];
+vector<tuple<int, int, ll>> e;
+vector<ll> d1(N), d2(N);
 int n, m;
 
-void DJ()
+void DJ(int u, vector<ll> &dis, vector<pair<int, ll>> g[])
 {
-    rep(i, n) dis[i + 1] = LONG_LONG_MAX;
-    rep(i, n) d2[i + 1] = LONG_LONG_MAX;
-    dis[1] = 0;
-    d2[1] = 0;
-    q.push({0, 1, 0});
+    priority_queue<pair<ll, int>> q;
+    vector<bool> vis(n + 1, 0);
+
+    q.push({0, u});
     while (!q.empty())
     {
-        int u = get<1>(q.top());
-        ll mx = get<2>(q.top());
+        int u = q.top().second;
         q.pop();
         if (vis[u])
             continue;
         vis[u] = 1;
-        for (auto i : adj[u])
+        for (auto i : g[u])
         {
-            if (!vis[i.first])
+            if (!vis[i.first] && dis[u] + i.second < dis[i.first])
             {
-                if (i.second >= mx)
-                {
-                    ll d = dis[u] + i.second / 2 + ceil(mx / 2.0);
-                    if (d <= dis[i.first])
-                    {
-                        dis[i.first] = d;
-                        q.push({d, i.first, i.second});
-                    }
-                }
-                else
-                {
-                    ll d = dis[u] + i.second;
-                    if (d < dis[i.first])
-                    {
-                        dis[i.first] = d;
-                        q.push({d, i.first, mx});
-                    }
-                }
+                dis[i.first] = dis[u] + i.second;
+                q.push({-dis[i.first], i.first});
             }
         }
     }
-    cout << dis[n] << "\n";
+}
+
+void DISCOUNT()
+{
+    rep(i, n - 1) d1[i + 2] = inf;
+    rep(i, n) d2[i] = inf;
+    DJ(1, d1, g1);
+    DJ(n, d2, g2);
+    ll mn = inf;
+    for (auto i : e)
+        mn = min(mn, d1[get<0>(i)] + d2[get<1>(i)] + get<2>(i) / 2);
+
+    cout << mn << "\n";
 }
 
 int main()
@@ -76,7 +59,9 @@ int main()
         int u, v;
         ll c;
         cin >> u >> v >> c;
-        adj[u].emplace_back(make_pair(v, c));
+        e.emplace_back(make_tuple(u, v, c));
+        g1[u].emplace_back(make_pair(v, c));
+        g2[v].emplace_back(make_pair(u, c));
     }
-    DJ();
+    DISCOUNT();
 }
